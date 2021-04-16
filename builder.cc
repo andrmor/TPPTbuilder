@@ -15,8 +15,8 @@ int main(int argc, char** argv)
 
     std::string inputFileName  = "/home/andr/WORK/TPPT/SimOutput.txt";
     bool bBinaryInput = false;
-    std::string outputFileName = "/home/andr/WORK/TPPT/BuilderOutput.txt";
-    bool bBinaryOutput = false;
+    std::string outputFileName = "/home/andr/WORK/TPPT/BuilderOutput.bin";
+    bool bBinaryOutput = true;
 
     double maxTimeDelta    = 0.1;
     double roughEnergyMin  = 0.311;

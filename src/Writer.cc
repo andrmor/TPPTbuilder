@@ -39,18 +39,28 @@ std::string Writer::write(std::vector<std::vector<EventRecord> > & Events,
 
     if (bDebug) out("->Writing events to file...");
 
-    if (bBinary)
+    for (int iScint = 0; iScint < Events.size(); iScint++)
     {
+        const std::vector<EventRecord> & evec = Events[iScint];
+        if (evec.empty()) continue;
 
-    }
-    else
-    {
-        for (int iEvent = 0; iEvent < Events.size(); iEvent++)
+        if (bBinary)
         {
-            const std::vector<EventRecord> & evec = Events[iEvent];
-            if (evec.empty()) continue;
+            *outStream << char(0xEE);
+            outStream->write((char*)&iScint,                     sizeof(int));
+            outStream->write((char*)ScintPos[iScint].data(), 3 * sizeof(double));
 
-            *outStream << "# " << iEvent << ' ' << ScintPos[iEvent][0] << ' ' << ScintPos[iEvent][1] << ' ' << ScintPos[iEvent][2] << "\n";
+            for (const EventRecord & ev : evec)
+            {
+                if (ev.energy < energyMin || ev.energy > energyMax) continue;
+                *outStream << char(0xFF);
+                outStream->write((char*)&ev.time,   sizeof(double));
+                outStream->write((char*)&ev.energy, sizeof(double));
+            }
+        }
+        else
+        {
+            *outStream << "# " << iScint << ' ' << ScintPos[iScint][0] << ' ' << ScintPos[iScint][1] << ' ' << ScintPos[iScint][2] << "\n";
 
             for (const EventRecord & ev : evec)
             {
