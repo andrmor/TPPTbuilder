@@ -13,8 +13,8 @@ int main(int argc, char** argv)
 {
     // --- Start of user inits ---
 
-    std::string inputFileName  = "/home/andr/WORK/TPPT/SimOutput.txt";
-    bool bBinaryInput = false;
+    std::string inputFileName  = "/home/andr/WORK/TPPT/SimOutput.bin";
+    bool bBinaryInput = true;
     std::string outputFileName = "/home/andr/WORK/TPPT/BuilderOutput.bin";
     bool bBinaryOutput = true;
 
