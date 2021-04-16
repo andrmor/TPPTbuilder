@@ -13,10 +13,10 @@ int main(int argc, char** argv)
 {
     // --- Start of user inits ---
 
-    std::string inputFileName  = "/home/andr/WORK/TPPT/SimOutput.bin";
-    bool bBinaryInput = true;
-    std::string outputFileName = "/home/andr/WORK/TPPT/BuilderOutput.bin";
-    bool bBinaryOutput = true;
+    std::string inputFileName  = "/home/andr/WORK/TPPT/SimOutput.txt";
+    bool bBinaryInput = false;
+    std::string outputFileName = "/home/andr/WORK/TPPT/BuilderOutput.txt";
+    bool bBinaryOutput = false;
 
     double maxTimeDelta    = 0.1;
     double roughEnergyMin  = 0.311;
@@ -24,7 +24,7 @@ int main(int argc, char** argv)
     double integrationTime = 40.0;
     double deadTime        = 100.0;
 
-    bool bDebug = true;
+    bool bDebug = false;
 
     // --- End of user inits
 
@@ -52,6 +52,7 @@ int main(int argc, char** argv)
     clusterer.cluster();
 
     EventBuilder builder(Nodes, integrationTime, deadTime);
+    builder.bDebug = bDebug;
     builder.buildEvents(Events);
 
     Writer writer(outputFileName, bBinaryOutput);
