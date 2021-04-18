@@ -13,12 +13,12 @@ int main(int argc, char** argv)
 {
     // --- Start of user inits ---
 
-    std::string inputFileName  = "/home/andr/WORK/TPPT/SimOutput.txt";
-    bool bBinaryInput = false;
-    std::string outputFileName = "/home/andr/WORK/TPPT/BuilderOutput.txt";
-    bool bBinaryOutput = false;
+    std::string inputFileName  = "/home/andr/WORK/TPPT/SimOutput.bin";     bool bBinaryInput = true;
+    //std::string inputFileName  = "/home/andr/WORK/TPPT/SimOutput.txt";     bool bBinaryInput = false;
+    std::string outputFileName = "/home/andr/WORK/TPPT/BuilderOutput.bin"; bool bBinaryOutput = true;
+    //std::string outputFileName = "/home/andr/WORK/TPPT/BuilderOutput.txt"; bool bBinaryOutput = false;
 
-    double maxTimeDelta    = 0.1;
+    double clusterTime     = 0.1;
     double roughEnergyMin  = 0.311;
     double roughEnergyMax  = 0.711;
     double integrationTime = 40.0;
@@ -47,7 +47,7 @@ int main(int argc, char** argv)
         exit(2);
     }
 
-    Clusterer clusterer(Nodes, maxTimeDelta);
+    Clusterer clusterer(Nodes, clusterTime);
     clusterer.bDebug = bDebug;
     clusterer.cluster();
 
