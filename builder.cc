@@ -18,7 +18,7 @@ int main(int argc, char** argv)
     std::string outputFileName = "/home/andr/WORK/TPPT/BuilderOutput.bin"; bool bBinaryOutput = true;
     //std::string outputFileName = "/home/andr/WORK/TPPT/BuilderOutput.txt"; bool bBinaryOutput = false;
 
-    double CTR             = 0.2; // coincidence timing resolution in ns!
+    double CTR             = 0; // coincidence timing resolution in ns!
     long   Seed            = 100;
 
     double clusterTime     = 0.1;

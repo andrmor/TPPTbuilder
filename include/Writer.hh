@@ -21,6 +21,8 @@ public:
                       std::vector<std::vector<double>> & ScintPos); // returns error string, empty if success
 
     bool bDebug = true;
+    bool bSaveEnergyDist = true;
+    std::string EnergyDistFileName = "/home/andr/WORK/TPPT/Builder-EnergyDist.txt";
 
 private:
     std::ofstream * outStream = nullptr;
@@ -33,6 +35,7 @@ private:
     std::normal_distribution<double> * gauss      = nullptr;
 
     void blurTime(double & time);
+    void saveEnergyDist(std::vector<std::vector<EventRecord>> & Events);
 };
 
 #endif // writer_h

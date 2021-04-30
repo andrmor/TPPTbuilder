@@ -34,9 +34,8 @@ Writer::Writer(const std::string &FileName, bool Binary, double EnergyMin, doubl
         //https://channel9.msdn.com/Events/GoingNative/2013/rand-Considered-Harmful
         //using mersenne twister engine
         randEngine = new std::mt19937_64(seed);
-        gauss = new std::normal_distribution<double>(0, CTR / 2.355);
+        gauss = new std::normal_distribution<double>(0, CTR / 2.355 / sqrt(2.0));
         //for (int i=0; i<10;i++) out( (*gauss)(*randEngine) );
-        //outFlush();
     }
 }
 
@@ -89,10 +88,54 @@ std::string Writer::write(std::vector<std::vector<EventRecord> > & Events,
 
     outStream->close();
     if (bDebug) out("\n<-Write completed\n");
+
+    if (bSaveEnergyDist) saveEnergyDist(Events);
+
     return "";
 }
 
 void Writer::blurTime(double & time)
 {
     time += (*gauss)(*randEngine);
+}
+
+void Writer::saveEnergyDist(std::vector<std::vector<EventRecord> > & Events)
+{
+    std::ofstream Stream;
+    Stream.open(EnergyDistFileName);
+
+    if (!Stream.is_open() || Stream.fail() || Stream.bad())
+    {
+        out("Failed to open file to save energy distribution:", EnergyDistFileName);
+        return;
+    }
+
+    int numBins = 1000;
+    double energyFrom = 0;
+    double energyTo   = 1.0;
+    double energyPerBin = (energyTo - energyFrom) / numBins;
+    std::vector<int> Hist;
+    Hist.resize(numBins);
+    for (int i = 0; i < numBins; i++) Hist[i] = 0;
+    int numUnderFlow = 0;
+    int numOverFlow = 0;
+
+    for (int iScint = 0; iScint < Events.size(); iScint++)
+    {
+        std::vector<EventRecord> & evec = Events[iScint];
+        if (evec.empty()) continue;
+
+        for (EventRecord & ev : evec)
+        {
+            int iBin = (ev.energy - energyFrom) / energyPerBin;
+            if (iBin < 0) numUnderFlow++;
+            else if (iBin >= numBins) numOverFlow++;
+            else Hist[iBin]++;
+        }
+    }
+
+    for (int i = 0; i < numBins; i++)
+        Stream << energyFrom + energyPerBin*i << " " << Hist[i] << std::endl;
+
+    Stream.close();
 }
