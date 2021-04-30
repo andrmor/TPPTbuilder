@@ -18,6 +18,9 @@ int main(int argc, char** argv)
     std::string outputFileName = "/home/andr/WORK/TPPT/BuilderOutput.bin"; bool bBinaryOutput = true;
     //std::string outputFileName = "/home/andr/WORK/TPPT/BuilderOutput.txt"; bool bBinaryOutput = false;
 
+    double CTR             = 0.2; // coincidence timing resolution in ns!
+    long   Seed            = 100;
+
     double clusterTime     = 0.1;
     double roughEnergyMin  = 0.311;
     double roughEnergyMax  = 0.711;
@@ -55,9 +58,9 @@ int main(int argc, char** argv)
     builder.bDebug = bDebug;
     builder.buildEvents(Events);
 
-    Writer writer(outputFileName, bBinaryOutput);
+    Writer writer(outputFileName, bBinaryOutput, roughEnergyMin, roughEnergyMax, CTR, Seed);
     writer.bDebug = bDebug;
-    error = writer.write(Events, ScintPos, roughEnergyMin, roughEnergyMax);
+    error = writer.write(Events, ScintPos);
     if (!error.empty())
     {
         out(error);
