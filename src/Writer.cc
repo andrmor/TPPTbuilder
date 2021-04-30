@@ -34,7 +34,7 @@ Writer::Writer(const std::string &FileName, bool Binary, double EnergyMin, doubl
         //https://channel9.msdn.com/Events/GoingNative/2013/rand-Considered-Harmful
         //using mersenne twister engine
         randEngine = new std::mt19937_64(seed);
-        gauss = new std::normal_distribution<double>(0, CTR);
+        gauss = new std::normal_distribution<double>(0, CTR / 2.355);
         //for (int i=0; i<10;i++) out( (*gauss)(*randEngine) );
         //outFlush();
     }
