@@ -1,4 +1,5 @@
 #include "Writer.hh"
+#include "Hist1D.hh"
 #include "out.hh"
 
 #include <fstream>
@@ -101,41 +102,16 @@ void Writer::blurTime(double & time)
 
 void Writer::saveEnergyDist(std::vector<std::vector<EventRecord> > & Events)
 {
-    std::ofstream Stream;
-    Stream.open(EnergyDistFileName);
-
-    if (!Stream.is_open() || Stream.fail() || Stream.bad())
-    {
-        out("Failed to open file to save energy distribution:", EnergyDistFileName);
-        return;
-    }
-
-    int numBins = 1000;
-    double energyFrom = 0;
-    double energyTo   = 1.0;
-    double energyPerBin = (energyTo - energyFrom) / numBins;
-    std::vector<int> Hist;
-    Hist.resize(numBins);
-    for (int i = 0; i < numBins; i++) Hist[i] = 0;
-    int numUnderFlow = 0;
-    int numOverFlow = 0;
+    Hist1D Hist(1000, 0, 1.0);
 
     for (int iScint = 0; iScint < Events.size(); iScint++)
     {
         std::vector<EventRecord> & evec = Events[iScint];
         if (evec.empty()) continue;
 
-        for (EventRecord & ev : evec)
-        {
-            int iBin = (ev.energy - energyFrom) / energyPerBin;
-            if (iBin < 0) numUnderFlow++;
-            else if (iBin >= numBins) numOverFlow++;
-            else Hist[iBin]++;
-        }
+        for (EventRecord & ev : evec) Hist.fill(ev.energy);
     }
 
-    for (int i = 0; i < numBins; i++)
-        Stream << energyFrom + energyPerBin*i << " " << Hist[i] << std::endl;
-
-    Stream.close();
+    Hist.report();
+    Hist.save(EnergyDistFileName);
 }
