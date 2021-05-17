@@ -92,6 +92,8 @@ std::string Writer::write(std::vector<std::vector<EventRecord> > & Events,
 
     if (bSaveEnergyDist) saveEnergyDist(Events);
 
+    if (bSaveTimeDist) saveTimeDist(Events);
+
     return "";
 }
 
@@ -118,7 +120,7 @@ void Writer::saveEnergyDist(std::vector<std::vector<EventRecord> > & Events)
 
 void Writer::saveTimeDist(std::vector<std::vector<EventRecord> > & Events)
 {
-    Hist1D Hist(1000, 0, 1.0);
+    Hist1D Hist(1000, 0, 2e+12);
 
     for (int iScint = 0; iScint < Events.size(); iScint++)
     {
