@@ -115,3 +115,19 @@ void Writer::saveEnergyDist(std::vector<std::vector<EventRecord> > & Events)
     Hist.report();
     Hist.save(EnergyDistFileName);
 }
+
+void Writer::saveTimeDist(std::vector<std::vector<EventRecord> > & Events)
+{
+    Hist1D Hist(1000, 0, 1.0);
+
+    for (int iScint = 0; iScint < Events.size(); iScint++)
+    {
+        std::vector<EventRecord> & evec = Events[iScint];
+        if (evec.empty()) continue;
+
+        for(EventRecord & ev : evec) Hist.fill(ev.time);
+    }
+
+    Hist.report();
+    Hist.save(TimeDistFileName);
+}

@@ -22,7 +22,9 @@ public:
 
     bool bDebug = true;
     bool bSaveEnergyDist = true;
-    std::string EnergyDistFileName = "/home/andr/WORK/TPPT/Builder-EnergyDist.txt";
+    //std::string EnergyDistFileName = "/home/andr/WORK/TPPT/Builder-EnergyDist.txt";
+    std::string EnergyDistFileName = "/data/margarida/Data";
+    std::string TimeDistFileName = "/data/margarida/Data";
 
 private:
     std::ofstream * outStream = nullptr;
@@ -36,6 +38,7 @@ private:
 
     void blurTime(double & time);
     void saveEnergyDist(std::vector<std::vector<EventRecord>> & Events);
+    void saveTimeDist(std::vector<std::vector<EventRecord>> & Events);
 };
 
 #endif // writer_h
