@@ -23,8 +23,8 @@ public:
     bool bDebug = true;
     bool bSaveEnergyDist = true;
     //std::string EnergyDistFileName = "/home/andr/WORK/TPPT/Builder-EnergyDist.txt";
-    std::string EnergyDistFileName = "/data/margarida/Data";
-    std::string TimeDistFileName = "/data/margarida/Data";
+    std::string EnergyDistFileName = "/data/margarida/Data/EnergyDist.txt";
+    std::string TimeDistFileName = "/data/margarida/Data/TimeDist.txt";
 
 private:
     std::ofstream * outStream = nullptr;

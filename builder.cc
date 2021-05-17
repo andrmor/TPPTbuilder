@@ -13,10 +13,15 @@ int main(int argc, char** argv)
 {
     // --- Start of user inits ---
 
-    std::string inputFileName  = "/home/andr/WORK/TPPT/SimOutput.bin";     bool bBinaryInput = true;
+    //std::string inputFileName  = "/home/andr/WORK/TPPT/SimOutput.bin";     bool bBinaryInput = true;
     //std::string inputFileName  = "/home/andr/WORK/TPPT/SimOutput.txt";     bool bBinaryInput = false;
-    std::string outputFileName = "/home/andr/WORK/TPPT/BuilderOutput.bin"; bool bBinaryOutput = true;
+    //std::string outputFileName = "/home/andr/WORK/TPPT/BuilderOutput.bin"; bool bBinaryOutput = true;
     //std::string outputFileName = "/home/andr/WORK/TPPT/BuilderOutput.txt"; bool bBinaryOutput = false;
+
+    std::string inputFileName  = "/data/margarida/Data/SimOutput.bin";     bool bBinaryInput = true;
+    //std::string inputFileName  = "/data/margarida/Data/SimOutput.txt";     bool bBinaryInput = false;
+    std::string outputFileName = "/data/margarida/Data/BuilderOutput.bin"; bool bBinaryOutput = true;
+    //std::string outputFileName = "/data/margarida/Data/BuilderOutput.txt"; bool bBinaryOutput = false;
 
     double CTR             = 0.2; // coincidence timing resolution in ns!
     long   Seed            = 100;
