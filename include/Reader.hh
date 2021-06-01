@@ -13,7 +13,7 @@ class ifstream;
 class Reader
 {
 public:
-    Reader(const std::string & FileName, bool Binary);
+    Reader(const std::string & FileName, bool Binary, bool bInputScintPos);
 
     std::string read(std::vector<std::vector<DepositionNodeRecord>> & Nodes, std::vector<std::vector<double>> & ScintPos); // returns error string, empty if success
 
@@ -21,7 +21,8 @@ public:
 
 private:
     std::ifstream * inStream = nullptr;
-    bool bBinary = false;
+    bool bBinary   = false;
+    bool bInputPos = false;
 };
 
 #endif // reader_h

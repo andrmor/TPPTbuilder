@@ -4,8 +4,8 @@
 #include <fstream>
 #include <sstream>
 
-Reader::Reader(const std::string & FileName, bool Binary) :
-    bBinary(Binary)
+Reader::Reader(const std::string & FileName, bool Binary, bool bInputScintPos) :
+    bBinary(Binary), bInputPos(bInputScintPos)
 {
     if (bDebug)
     {
@@ -48,13 +48,17 @@ std::string Reader::read(std::vector<std::vector<DepositionNodeRecord> > & Nodes
             {
                 inStream->read((char*)&iScint, sizeof(int));
                 if (iScint < 0 || iScint >= Nodes.size()) return "Bad scintillator index";
-                inStream->read((char*)&x, sizeof(double));
-                inStream->read((char*)&y, sizeof(double));
-                inStream->read((char*)&z, sizeof(double));
-                ScintPos[iScint][0] = x;
-                ScintPos[iScint][1] = y;
-                ScintPos[iScint][2] = z;
-                if (bDebug) out("Scint #", iScint, "pos:",x,y,z);
+
+                if (bInputPos)
+                {
+                    inStream->read((char*)&x, sizeof(double));
+                    inStream->read((char*)&y, sizeof(double));
+                    inStream->read((char*)&z, sizeof(double));
+                    ScintPos[iScint][0] = x; // could write directly, but anyway obsolete soon
+                    ScintPos[iScint][1] = y;
+                    ScintPos[iScint][2] = z;
+                    if (bDebug) out("Scint #", iScint, "pos:",x,y,z);
+                }
             }
             else if (ch == (char)0xFF)
             {
@@ -85,12 +89,17 @@ std::string Reader::read(std::vector<std::vector<DepositionNodeRecord> > & Nodes
             if (line[0] == '#')
             {
                 //new scintillator
-                ss >> dummy >> iScint >> x >> y >> z;
+                ss >> dummy >> iScint;
                 if (iScint < 0 || iScint >= Nodes.size()) return "Bad scintillator index";
-                ScintPos[iScint][0] = x;
-                ScintPos[iScint][1] = y;
-                ScintPos[iScint][2] = z;
-                if (bDebug) out("Scint #", iScint, "pos:",x,y,z);
+
+                if (bInputPos)
+                {
+                    ss >> x >> y >> z;    //could write directly, but anyway will be obsolete soon
+                    ScintPos[iScint][0] = x;
+                    ScintPos[iScint][1] = y;
+                    ScintPos[iScint][2] = z;
+                    if (bDebug) out("Scint #", iScint, "pos:",x,y,z);
+                }
             }
             else
             {

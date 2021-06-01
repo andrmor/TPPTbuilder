@@ -14,7 +14,7 @@ class ofstream;
 class Writer
 {
 public:
-    Writer(const std::string & FileName, bool Binary, double EnergyMin, double EnergyMax, double CTR, long seed);
+    Writer(const std::string & FileName, bool Binary, bool bOutputScintPos, double EnergyMin, double EnergyMax, double CTR, long seed);
     ~Writer();
 
     std::string write(std::vector<std::vector<EventRecord>> & Events,
@@ -31,6 +31,7 @@ public:
 private:
     std::ofstream * outStream = nullptr;
     bool bBinary = false;
+    bool bOutputPos = false; //obsolete soon
     double energyMin = 0;
     double energyMax = 1000.0;
     double ctr = 0;

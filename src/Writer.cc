@@ -6,8 +6,8 @@
 #include <iostream>
 #include <sstream>
 
-Writer::Writer(const std::string &FileName, bool Binary, double EnergyMin, double EnergyMax, double CTR, long seed) :
-    bBinary(Binary), energyMin(EnergyMin), energyMax(EnergyMax), ctr(CTR)
+Writer::Writer(const std::string &FileName, bool Binary, bool bOutputScintPos, double EnergyMin, double EnergyMax, double CTR, long seed) :
+    bBinary(Binary), bOutputPos(bOutputScintPos), energyMin(EnergyMin), energyMax(EnergyMax), ctr(CTR)
 {
     if (bDebug)
     {
@@ -64,10 +64,14 @@ std::string Writer::write(std::vector<std::vector<EventRecord> > & Events,
         {
             *outStream << char(0xEE);
             outStream->write((char*)&iScint,                     sizeof(int));
-            outStream->write((char*)ScintPos[iScint].data(), 3 * sizeof(double));
+            if (bOutputPos) outStream->write((char*)ScintPos[iScint].data(), 3 * sizeof(double));
         }
         else
-            *outStream << "# " << iScint << ' ' << ScintPos[iScint][0] << ' ' << ScintPos[iScint][1] << ' ' << ScintPos[iScint][2] << "\n";
+        {
+            *outStream << "# " << iScint;
+            if (bOutputPos) *outStream << ' ' << ScintPos[iScint][0] << ' ' << ScintPos[iScint][1] << ' ' << ScintPos[iScint][2];
+            *outStream << std::endl;
+        }
 
         // events
         for (EventRecord & ev : evec)
@@ -114,13 +118,15 @@ void Writer::saveEnergyDist(std::vector<std::vector<EventRecord> > & Events)
         for (EventRecord & ev : evec) Hist.fill(ev.energy);
     }
 
+    out("Energy distribution (from 0 to 1 MeV):");
     Hist.report();
     Hist.save(EnergyDistFileName);
 }
 
 void Writer::saveTimeDist(std::vector<std::vector<EventRecord> > & Events)
 {
-    Hist1D Hist(100, 0, 2e+12);
+    double maxTime = 2e+12;
+    Hist1D Hist(100, 0, maxTime);
 
     for (int iScint = 0; iScint < Events.size(); iScint++)
     {
@@ -130,6 +136,7 @@ void Writer::saveTimeDist(std::vector<std::vector<EventRecord> > & Events)
         for(EventRecord & ev : evec) Hist.fill(ev.time);
     }
 
+    out("Time distribution (from 0 to", maxTime, "ns):");
     Hist.report();
     Hist.save(TimeDistFileName);
 }
