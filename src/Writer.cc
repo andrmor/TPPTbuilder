@@ -120,7 +120,7 @@ void Writer::saveEnergyDist(std::vector<std::vector<EventRecord> > & Events)
 
 void Writer::saveTimeDist(std::vector<std::vector<EventRecord> > & Events)
 {
-    Hist1D Hist(1000, 0, 2e+12);
+    Hist1D Hist(100, 0, 2e+12);
 
     for (int iScint = 0; iScint < Events.size(); iScint++)
     {

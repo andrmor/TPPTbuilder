@@ -23,9 +23,10 @@ public:
     bool bDebug = true;
     bool bSaveEnergyDist = true;
     bool bSaveTimeDist = true;
-    //std::string EnergyDistFileName = "/home/andr/WORK/TPPT/Builder-EnergyDist.txt";
-    std::string EnergyDistFileName = "/data/margarida/Data/EnergyDist.txt";
-    std::string TimeDistFileName = "/data/margarida/Data/TimeDist.txt";
+    std::string EnergyDistFileName = "/home/andr/WORK/TPPT/Builder-EnergyDist.txt";
+    std::string TimeDistFileName   = "/home/andr/WORK/TPPT/Builder-TimeDist.txt";
+    //std::string EnergyDistFileName = "/data/margarida/Data/EnergyDist.txt";
+    //std::string TimeDistFileName = "/data/margarida/Data/TimeDist.txt";
 
 private:
     std::ofstream * outStream = nullptr;
