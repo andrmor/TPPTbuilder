@@ -38,7 +38,6 @@ std::string Reader::read(std::vector<std::vector<DepositionNodeRecord> > & Nodes
     if (bBinary)
     {
         char ch;
-        double x,y,z;
         while (inStream->get(ch))
         {
             if (inStream->eof()) break;
@@ -63,7 +62,6 @@ std::string Reader::read(std::vector<std::vector<DepositionNodeRecord> > & Nodes
         std::string line;
 
         char dummy;
-        double x, y, z;
         double time, depo;
 
         while (!inStream->eof())
