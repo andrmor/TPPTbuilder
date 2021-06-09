@@ -6,8 +6,8 @@
 #include <iostream>
 #include <sstream>
 
-Writer::Writer(const std::string &FileName, bool Binary, bool bOutputScintPos, double EnergyMin, double EnergyMax, double CTR, long seed) :
-    bBinary(Binary), bOutputPos(bOutputScintPos), energyMin(EnergyMin), energyMax(EnergyMax), ctr(CTR)
+Writer::Writer(const std::string &FileName, bool Binary, double EnergyMin, double EnergyMax, double CTR, long seed) :
+    bBinary(Binary), energyMin(EnergyMin), energyMax(EnergyMax), ctr(CTR)
 {
     if (bDebug)
     {
@@ -46,11 +46,9 @@ Writer::~Writer()
     delete randEngine;
 }
 
-std::string Writer::write(std::vector<std::vector<EventRecord> > & Events,
-                          std::vector<std::vector<double>> & ScintPos)
+std::string Writer::write(std::vector<std::vector<EventRecord> > & Events)
 {
     if (!outStream)                       return "Cannot open input file";
-    if (Events.size() != ScintPos.size()) return "Missmatch in Events and ScintPos vectors";
 
     if (bDebug) out("->Writing events to file...");
 
@@ -63,15 +61,10 @@ std::string Writer::write(std::vector<std::vector<EventRecord> > & Events,
         if (bBinary)
         {
             *outStream << char(0xEE);
-            outStream->write((char*)&iScint,                     sizeof(int));
-            if (bOutputPos) outStream->write((char*)ScintPos[iScint].data(), 3 * sizeof(double));
+            outStream->write((char*)&iScint, sizeof(int));
         }
         else
-        {
-            *outStream << "# " << iScint;
-            if (bOutputPos) *outStream << ' ' << ScintPos[iScint][0] << ' ' << ScintPos[iScint][1] << ' ' << ScintPos[iScint][2];
-            *outStream << std::endl;
-        }
+            *outStream << "# " << iScint << std::endl;
 
         // events
         for (EventRecord & ev : evec)

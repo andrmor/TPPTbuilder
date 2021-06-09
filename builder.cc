@@ -23,9 +23,6 @@ int main(int argc, char** argv)
     //std::string outputFileName = "/data/margarida/Data/BuilderOutput.bin"; bool bBinaryOutput = true;
     //std::string outputFileName = "/data/margarida/Data/BuilderOutput.txt"; bool bBinaryOutput = false;
 
-    bool bInputScintPos    = false;  // will be obsolete soon
-    bool bOutputScintPos   = false;  // will be obsolete soon
-
     double CTR             = 0.2; // coincidence timing resolution in ns!
     long   Seed            = 100;
 
@@ -41,21 +38,15 @@ int main(int argc, char** argv)
 
     const int numScint = 6144;
 
-    if (bOutputScintPos && !bInputScintPos) bOutputScintPos = false;
-
     std::vector<std::vector<DepositionNodeRecord>> Nodes;
     Nodes.resize(numScint);
-
-    std::vector<std::vector<double>> ScintPos; // will be obsolete soon
-    ScintPos.resize(numScint);
-    for (int iScint = 0; iScint < numScint; iScint++) ScintPos[iScint].resize(3);
 
     std::vector<std::vector<EventRecord>> Events;
     Events.resize(Nodes.size());
 
-    Reader reader(inputFileName, bBinaryInput, bInputScintPos);
+    Reader reader(inputFileName, bBinaryInput);
     reader.bDebug = bDebug;
-    std::string error = reader.read(Nodes, ScintPos);
+    std::string error = reader.read(Nodes);
     if (!error.empty())
     {
         out(error);
@@ -70,9 +61,9 @@ int main(int argc, char** argv)
     builder.bDebug = bDebug;
     builder.buildEvents(Events);
 
-    Writer writer(outputFileName, bBinaryOutput, bOutputScintPos, roughEnergyMin, roughEnergyMax, CTR, Seed);
+    Writer writer(outputFileName, bBinaryOutput, roughEnergyMin, roughEnergyMax, CTR, Seed);
     writer.bDebug = bDebug;
-    error = writer.write(Events, ScintPos);
+    error = writer.write(Events);
     if (!error.empty())
     {
         out(error);
