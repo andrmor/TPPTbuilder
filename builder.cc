@@ -13,13 +13,14 @@ int main(int argc, char** argv)
 {
     // --- Start of user inits ---
 
-    std::string inputFileName  = "/home/andr/WORK/TPPT/SimOutput.bin";     bool bBinaryInput = true;
-    //std::string inputFileName  = "/home/andr/WORK/TPPT/SimOutput.txt";     bool bBinaryInput = false;
+    //std::vector<std::string> inputFileNames = {"/home/andr/WORK/TPPT/SimOutput0.bin","/home/andr/WORK/TPPT/SimOutput1.bin"};     bool bBinaryInput = true;
+    std::vector<std::string> inputFileNames = {"/home/andr/WORK/TPPT/SimOutput.bin"};     bool bBinaryInput = true;
+    //std::vector<std::string> inputFileNames = {"/home/andr/WORK/TPPT/SimOutput.txt"};     bool bBinaryInput = false;
     std::string outputFileName = "/home/andr/WORK/TPPT/BuilderOutput.bin"; bool bBinaryOutput = true;
     //std::string outputFileName = "/home/andr/WORK/TPPT/BuilderOutput.txt"; bool bBinaryOutput = false;
 
-    //std::string inputFileName  = "/data/margarida/Data/SimOutput.bin";     bool bBinaryInput = true;
-    //std::string inputFileName  = "/data/margarida/Data/SimOutput.txt";     bool bBinaryInput = false;
+    //std::vector<std::string> inputFileNames = {"/data/margarida/Data/SimOutput.bin"};     bool bBinaryInput = true;
+    //std::vector<std::string> inputFileNames = {"/data/margarida/Data/SimOutput.txt"};     bool bBinaryInput = false;
     //std::string outputFileName = "/data/margarida/Data/BuilderOutput.bin"; bool bBinaryOutput = true;
     //std::string outputFileName = "/data/margarida/Data/BuilderOutput.txt"; bool bBinaryOutput = false;
 
@@ -44,7 +45,7 @@ int main(int argc, char** argv)
     std::vector<std::vector<EventRecord>> Events;
     Events.resize(Nodes.size());
 
-    Reader reader(inputFileName, bBinaryInput);
+    Reader reader(inputFileNames, bBinaryInput);
     reader.bDebug = bDebug;
     std::string error = reader.read(Nodes);
     if (!error.empty())

@@ -3,24 +3,20 @@
 
 #include "DepositionNodeRecord.hh"
 
-#include <string>
 #include <vector>
-
-namespace name {
-class ifstream;
-}
+#include <string>
 
 class Reader
 {
 public:
-    Reader(const std::string & FileName, bool Binary);
+    Reader(const std::vector<std::string> & fileNames, bool binary);
 
     std::string read(std::vector<std::vector<DepositionNodeRecord>> & Nodes); // returns error string, empty if success
 
     bool bDebug = true;
 
 private:
-    std::ifstream * inStream = nullptr;
+    const std::vector<std::string> FileNames;
     bool bBinary   = false;
 };
 
