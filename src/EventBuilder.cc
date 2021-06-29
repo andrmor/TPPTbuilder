@@ -12,6 +12,8 @@ void EventBuilder::buildEvents(std::vector<std::vector<EventRecord>> & events)
 
     for (int iScint = 0; iScint < Clusters.size(); iScint++)
     {
+        //out("Event building for scint #:", iScint);
+
         std::vector<DepositionNodeRecord> & cvec = Clusters[iScint];
         if (cvec.empty()) continue;
 

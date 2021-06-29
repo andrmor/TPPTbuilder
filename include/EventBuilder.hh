@@ -13,7 +13,7 @@ public:
 
     void buildEvents(std::vector<std::vector<EventRecord>> & events);
 
-    bool bDebug = true;
+    bool bDebug = false;
 
 private:
     std::vector< std::vector<DepositionNodeRecord>> & Clusters;

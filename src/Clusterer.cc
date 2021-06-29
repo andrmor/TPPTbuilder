@@ -12,6 +12,8 @@ void Clusterer::cluster()
 
     for (int iScint = 0; iScint < Nodes.size(); iScint++)
     {
+        //out("Clustering for scint #:", iScint);
+
         std::vector<DepositionNodeRecord> & nvec = Nodes[iScint];
         if (nvec.empty()) continue;
 

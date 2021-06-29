@@ -9,15 +9,16 @@
 class Reader
 {
 public:
-    Reader(const std::vector<std::string> & fileNames, bool binary);
+    Reader(const std::string & dir, const std::vector<std::string> & fileNames, bool binary);
 
-    std::string read(std::vector<std::vector<DepositionNodeRecord>> & Nodes); // returns error string, empty if success
+    void read(const std::pair<double, double> & timeRange, std::vector<std::vector<DepositionNodeRecord>> & Nodes); //timeRange: <from,to> in ns
 
-    bool bDebug = true;
+    bool bDebug = false;
 
 private:
-    const std::vector<std::string> FileNames;
-    bool bBinary   = false;
+    std::string Dir;
+    std::vector<std::string> FileNames;
+    bool bBinary = false;
 };
 
 #endif // reader_h

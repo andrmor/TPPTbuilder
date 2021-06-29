@@ -13,16 +13,26 @@ int main(int argc, char** argv)
 {
     // --- Start of user inits ---
 
-    //std::vector<std::string> inputFileNames = {"/home/andr/WORK/TPPT/SimOutput0.bin","/home/andr/WORK/TPPT/SimOutput1.bin"};     bool bBinaryInput = true;
-    std::vector<std::string> inputFileNames = {"/home/andr/WORK/TPPT/SimOutput.bin"};     bool bBinaryInput = true;
-    //std::vector<std::string> inputFileNames = {"/home/andr/WORK/TPPT/SimOutput.txt"};     bool bBinaryInput = false;
-    std::string outputFileName = "/home/andr/WORK/TPPT/BuilderOutput.bin"; bool bBinaryOutput = true;
-    //std::string outputFileName = "/home/andr/WORK/TPPT/BuilderOutput.txt"; bool bBinaryOutput = false;
+    std::string dir = "/home/andr/WORK/TPPT";
+    //std::string dir = "/data/margarida/Data";
 
-    //std::vector<std::string> inputFileNames = {"/data/margarida/Data/SimOutput.bin"};     bool bBinaryInput = true;
-    //std::vector<std::string> inputFileNames = {"/data/margarida/Data/SimOutput.txt"};     bool bBinaryInput = false;
-    //std::string outputFileName = "/data/margarida/Data/BuilderOutput.bin"; bool bBinaryOutput = true;
-    //std::string outputFileName = "/data/margarida/Data/BuilderOutput.txt"; bool bBinaryOutput = false;
+    bool bBinaryInput  = true;
+    bool bBinaryOutput = true;
+
+    /*
+    std::vector<std::string> inputFileNames = {"SimOutput-NatRad-0-0m1m.bin",
+                                               "SimOutput-NatRad-1-1m2m.bin",
+                                               "SimOutput-NatRad-2-2m3m.bin",
+                                               "SimOutput-NatRad-3-3m4m.bin",
+                                               "SimOutput-NatRad-4-4m5m.bin"};
+    */
+
+    std::vector<std::string> inputFileNames = {"SimOutput-NatRad-0-0m1m.bin"};
+
+    //std::vector<std::string> inputFileNames = {"SimOutput.bin"};
+    //std::vector<std::string> inputFileNames = {"SimOutput.txt"};
+    std::string outputFileName = "BuilderOutput.bin";
+    //std::string outputFileName = "BuilderOutput.txt";
 
     double CTR             = 0.2; // coincidence timing resolution in ns!
     long   Seed            = 100;
@@ -33,41 +43,42 @@ int main(int argc, char** argv)
     double integrationTime = 40.0;
     double deadTime        = 100.0;
 
-    bool bDebug = false;
+    //std::vector<std::pair<double,double>> TimeRanges = { {0, 1e50} }; // no filter and splitting
+    std::vector<std::pair<double,double>> TimeRanges = { {0, 1e10}, {1e10, 2e10}, {2e10, 3e10}, {3e10, 4e10}, {4e10, 5e10}, {5e10, 6e10} };
+    //std::vector<std::pair<double,double>> TimeRanges = { {0, 6e10}, {6e10, 12e10}, {12e10, 18e10}, {18e10, 24e10}, {24e10, 30e10} };
 
     // --- End of user inits
 
+    Writer writer(dir, outputFileName, bBinaryOutput);
+    writer.configure(roughEnergyMin, roughEnergyMax, CTR, Seed);
+    if (!writer.isOK())
+    {
+        out("Failed to create output file", outputFileName, "in", dir);
+        exit(1);
+    }
+
     const int numScint = 6144;
-
-    std::vector<std::vector<DepositionNodeRecord>> Nodes;
-    Nodes.resize(numScint);
-
-    std::vector<std::vector<EventRecord>> Events;
-    Events.resize(Nodes.size());
-
-    Reader reader(inputFileNames, bBinaryInput);
-    reader.bDebug = bDebug;
-    std::string error = reader.read(Nodes);
-    if (!error.empty())
+    for (const std::pair<double,double> & timeRange : TimeRanges)
     {
-        out(error);
-        exit(2);
+        out("Processing time range from", timeRange.first, " ns to", timeRange.second, " ns");
+        std::vector<std::vector<DepositionNodeRecord>> Nodes;  Nodes. resize(numScint);
+        std::vector<std::vector<EventRecord>>          Events; Events.resize(numScint);
+
+        Reader reader(dir, inputFileNames, bBinaryInput);
+        reader.read(timeRange, Nodes);
+        out("Reading completed");
+
+        Clusterer clusterer(Nodes, clusterTime);
+        clusterer.cluster();
+        out("Clustering completed");
+
+        EventBuilder builder(Nodes, integrationTime, deadTime);
+        builder.buildEvents(Events);
+        out("Event building completed");
+
+        writer.write(Events);
     }
 
-    Clusterer clusterer(Nodes, clusterTime);
-    clusterer.bDebug = bDebug;
-    clusterer.cluster();
-
-    EventBuilder builder(Nodes, integrationTime, deadTime);
-    builder.bDebug = bDebug;
-    builder.buildEvents(Events);
-
-    Writer writer(outputFileName, bBinaryOutput, roughEnergyMin, roughEnergyMax, CTR, Seed);
-    writer.bDebug = bDebug;
-    error = writer.write(Events);
-    if (!error.empty())
-    {
-        out(error);
-        exit(3);
-    }
+    writer.saveEnergyDist("Builder-Energy.txt");
+    writer.saveTimeDist("Builder-Time.txt");
 }
