@@ -11,15 +11,23 @@ namespace name {
 class ofstream;
 }
 
+class Hist1D;
+
 class Writer
 {
 public:
-    Writer(const std::string & FileName, bool Binary, double EnergyMin, double EnergyMax, double CTR, long seed);
+    Writer(const std::string & dir, const std::string & fileName, bool Binary);
     ~Writer();
 
-    std::string write(std::vector<std::vector<EventRecord>> & Events); // returns error string, empty if success
+    bool isOK() const {return (bool)outStream;}
+    void configure(double energyMin, double energyMax, double ctr, long seed);
 
-    bool bDebug = true;
+    void write(std::vector<std::vector<EventRecord>> & Events);
+
+    void saveEnergyDist(const std::string & fileName);
+    void saveTimeDist(const std::string & fileName);
+
+    bool bDebug = false;
     bool bSaveEnergyDist = true;
     bool bSaveTimeDist = true;
     std::string EnergyDistFileName = "/home/andr/WORK/TPPT/Builder-EnergyDist.txt";
@@ -28,18 +36,20 @@ public:
     //std::string TimeDistFileName = "/data/margarida/Data/TimeDist.txt";
 
 private:
-    std::ofstream * outStream = nullptr;
-    bool bBinary = false;
-    double energyMin = 0;
-    double energyMax = 1000.0;
-    double ctr = 0;
+    std::string Dir;
+    std::string FileName  = "UndefinedSaveName";
+    bool        bBinary   = false;
+    double      EnergyMin = 0;
+    double      EnergyMax = 1000.0;
+    double      CTR       = 0;
 
+    std::ofstream                    * outStream  = nullptr;
     std::mt19937_64                  * randEngine = nullptr;
     std::normal_distribution<double> * gauss      = nullptr;
+    Hist1D                           * histEnergy = nullptr;
+    Hist1D                           * histTime   = nullptr;
 
     void blurTime(double & time);
-    void saveEnergyDist(std::vector<std::vector<EventRecord>> & Events);
-    void saveTimeDist(std::vector<std::vector<EventRecord>> & Events);
 };
 
 #endif // writer_h

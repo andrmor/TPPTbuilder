@@ -5,29 +5,33 @@
 #include <sstream>
 #include <ios>
 
-Reader::Reader(const std::vector<std::string> & fileNames, bool binary) :
-    FileNames(fileNames), bBinary(binary) {}
+Reader::Reader(const std::string & dir, const std::vector<std::string> & fileNames, bool binary) :
+    Dir(dir), FileNames(fileNames), bBinary(binary) {}
 
-std::string Reader::read(std::vector<std::vector<DepositionNodeRecord> > & Nodes)
+void Reader::read(const std::pair<double,double> & timeRange, std::vector<std::vector<DepositionNodeRecord> > & Nodes)
 {
     if (bDebug) out("\n->Reading input files...\n");
     int iScint;
 
-
     for (std::string FileName : FileNames)
     {
-        if (bDebug) out("Input file:", FileName);
+        const std::string fn = Dir + '/' + FileName;
+        if (bDebug) out("Input file:", fn);
 
         std::ifstream inStream;
-        if (bBinary) inStream.open(FileName, std::ios::in | std::ios::binary);
-        else         inStream.open(FileName);
+        if (bBinary) inStream.open(fn, std::ios::in | std::ios::binary);
+        else         inStream.open(fn);
 
         if (!inStream.is_open() || inStream.fail() || inStream.bad())
-            return "Cannot open input file:\n" + FileName;
+        {
+            out("Cannot open input file:\n", fn);
+            exit(2);
+        }
 
         if (bBinary)
         {
             char ch;
+            double time, energy;
             while (inStream.get(ch))
             {
                 if (inStream.eof()) break;
@@ -35,15 +39,20 @@ std::string Reader::read(std::vector<std::vector<DepositionNodeRecord> > & Nodes
                 if (ch == (char)0xEE)
                 {
                     inStream.read((char*)&iScint, sizeof(int));
-                    if (iScint < 0 || iScint >= Nodes.size()) return "Bad scintillator index";
+                    if (iScint < 0 || iScint >= Nodes.size())
+                    {
+                        out("Bad scintillator index:", iScint);
+                        exit(10);
+                    }
                 }
                 else if (ch == (char)0xFF)
                 {
-                    DepositionNodeRecord node;
-                    inStream.read((char*)&node.time, sizeof(double));
-                    inStream.read((char*)&node.energy, sizeof(double));
-                    if (bDebug) out("Extracted values:", node.time, node.energy);
-                    Nodes[iScint].push_back(node);
+                    inStream.read((char*)&time,   sizeof(double));
+                    inStream.read((char*)&energy, sizeof(double));
+                    if (bDebug) out("Extracted values:", time, energy);
+
+                    if (time > timeRange.first && time < timeRange.second)
+                        Nodes[iScint].push_back(DepositionNodeRecord(time, energy));
                 }
             }
         }
@@ -52,7 +61,7 @@ std::string Reader::read(std::vector<std::vector<DepositionNodeRecord> > & Nodes
             std::string line;
 
             char dummy;
-            double time, depo;
+            double time, energy;
 
             while (!inStream.eof())
             {
@@ -66,14 +75,20 @@ std::string Reader::read(std::vector<std::vector<DepositionNodeRecord> > & Nodes
                 {
                     //new scintillator
                     ss >> dummy >> iScint;
-                    if (iScint < 0 || iScint >= Nodes.size()) return "Bad scintillator index";
+                    if (iScint < 0 || iScint >= Nodes.size())
+                    {
+                        out("Bad scintillator index:", iScint);
+                        exit(10);
+                    }
                 }
                 else
                 {
                     //another node
-                    ss >> time >> depo;
-                    Nodes[iScint].push_back( DepositionNodeRecord(time, depo) );
-                    if (bDebug) out("Extracted values:", time, depo);
+                    ss >> time >> energy;
+                    if (bDebug) out("Extracted values:", time, energy);
+
+                    if (time > timeRange.first && time < timeRange.second)
+                        Nodes[iScint].push_back(DepositionNodeRecord(time, energy));
                 }
             }
         }
@@ -82,5 +97,4 @@ std::string Reader::read(std::vector<std::vector<DepositionNodeRecord> > & Nodes
     }
 
     if (bDebug) out("\n<-Read completed\n");
-    return "";
 }

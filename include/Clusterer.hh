@@ -12,7 +12,7 @@ public:
 
     void cluster();
 
-    bool bDebug = true;
+    bool bDebug = false;
 
 private:
     std::vector< std::vector<DepositionNodeRecord>> & Nodes;

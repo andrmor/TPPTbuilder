@@ -6,8 +6,8 @@
 #include <iostream>
 #include <sstream>
 
-Writer::Writer(const std::string &FileName, bool Binary, double EnergyMin, double EnergyMax, double CTR, long seed) :
-    bBinary(Binary), energyMin(EnergyMin), energyMax(EnergyMax), ctr(CTR)
+Writer::Writer(const std::string & dir, const std::string & fileName, bool Binary) :
+    Dir(dir), FileName(dir + '/' + fileName), bBinary(Binary)
 {
     if (bDebug)
     {
@@ -18,7 +18,7 @@ Writer::Writer(const std::string &FileName, bool Binary, double EnergyMin, doubl
     outStream = new std::ofstream();
 
     if (bBinary) outStream->open(FileName, std::ios::out | std::ios::binary);
-    else outStream->open(FileName);
+    else         outStream->open(FileName);
 
     if (!outStream->is_open() || outStream->fail() || outStream->bad())
     {
@@ -26,29 +26,51 @@ Writer::Writer(const std::string &FileName, bool Binary, double EnergyMin, doubl
         delete outStream; outStream = nullptr;
     }
     else
-    {
         if (bDebug) out("<-Open");
-    }
 
-    if (ctr != 0)
-    {
-        //https://channel9.msdn.com/Events/GoingNative/2013/rand-Considered-Harmful
-        //using mersenne twister engine
-        randEngine = new std::mt19937_64(seed);
-        gauss = new std::normal_distribution<double>(0, CTR / 2.355 / sqrt(2.0));
-        //for (int i=0; i<10;i++) out( (*gauss)(*randEngine) );
-    }
+    histEnergy = new Hist1D(1000, 0, 1.0);    // [MeV]
+    histTime   = new Hist1D(100,  0, 2e+12);  // [ns]
+}
+
+void Writer::configure(double energyMin, double energyMax, double ctr, long seed)
+{
+     EnergyMin = energyMin;
+     EnergyMax = energyMax;
+     CTR       = ctr;
+
+     if (CTR != 0)
+     {
+         //if (bDebug) out("Starting random engine");
+         //https://channel9.msdn.com/Events/GoingNative/2013/rand-Considered-Harmful
+         //using mersenne twister engine
+
+         delete randEngine; randEngine = new std::mt19937_64(seed);
+         delete gauss;      gauss      = new std::normal_distribution<double>(0, CTR / 2.355 / sqrt(2.0));
+
+         //test random generator
+         //for (int i=0; i<10;i++) out( (*gauss)(*randEngine) );
+     }
 }
 
 Writer::~Writer()
 {
+    delete histTime;
+    delete histEnergy;
+
     delete gauss;
     delete randEngine;
+
+    outStream->close();
+    delete outStream;
 }
 
-std::string Writer::write(std::vector<std::vector<EventRecord> > & Events)
+void Writer::write(std::vector<std::vector<EventRecord> > & Events)
 {
-    if (!outStream)                       return "Cannot open input file";
+    if (!outStream)
+    {
+        if (bDebug) "Output stream does not exist!";
+        exit(1);
+    }
 
     if (bDebug) out("->Writing events to file...");
 
@@ -69,9 +91,9 @@ std::string Writer::write(std::vector<std::vector<EventRecord> > & Events)
         // events
         for (EventRecord & ev : evec)
         {
-            if (ev.energy < energyMin || ev.energy > energyMax) continue;
+            if (ev.energy < EnergyMin || ev.energy > EnergyMax) continue;
 
-            if (ctr != 0) blurTime(ev.time);
+            if (CTR != 0) blurTime(ev.time);
 
             if (bBinary)
             {
@@ -81,17 +103,13 @@ std::string Writer::write(std::vector<std::vector<EventRecord> > & Events)
             }
             else
                 *outStream << ev.time << " " << ev.energy << '\n';
+
+            histEnergy->fill(ev.energy);
+            histTime->fill(ev.time);
         }
     }
 
-    outStream->close();
     if (bDebug) out("\n<-Write completed\n");
-
-    if (bSaveEnergyDist) saveEnergyDist(Events);
-
-    if (bSaveTimeDist) saveTimeDist(Events);
-
-    return "";
 }
 
 void Writer::blurTime(double & time)
@@ -99,37 +117,16 @@ void Writer::blurTime(double & time)
     time += (*gauss)(*randEngine);
 }
 
-void Writer::saveEnergyDist(std::vector<std::vector<EventRecord> > & Events)
+void Writer::saveEnergyDist(const std::string & fileName)
 {
-    Hist1D Hist(1000, 0, 1.0);
-
-    for (int iScint = 0; iScint < Events.size(); iScint++)
-    {
-        std::vector<EventRecord> & evec = Events[iScint];
-        if (evec.empty()) continue;
-
-        for (EventRecord & ev : evec) Hist.fill(ev.energy);
-    }
-
-    out("Energy distribution (from 0 to 1 MeV):");
-    Hist.report();
-    Hist.save(EnergyDistFileName);
+    out("Energy distribution of saved events (axis from 0 to 1 MeV, 1000 bins):"); //TODO request data from hist
+    histEnergy->report();
+    histEnergy->save(Dir + '/' + fileName);
 }
 
-void Writer::saveTimeDist(std::vector<std::vector<EventRecord> > & Events)
+void Writer::saveTimeDist(const std::string & fileName)
 {
-    double maxTime = 2e+12;
-    Hist1D Hist(100, 0, maxTime);
-
-    for (int iScint = 0; iScint < Events.size(); iScint++)
-    {
-        std::vector<EventRecord> & evec = Events[iScint];
-        if (evec.empty()) continue;
-
-        for(EventRecord & ev : evec) Hist.fill(ev.time);
-    }
-
-    out("Time distribution (from 0 to", maxTime, "ns):");
-    Hist.report();
-    Hist.save(TimeDistFileName);
+    out("Time distribution (from 0 to 2e12 ns):");  //TODO request data from hist
+    histTime->report();
+    histTime->save(Dir + '/' + fileName);
 }
