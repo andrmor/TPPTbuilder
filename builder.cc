@@ -22,11 +22,10 @@ int main(int argc, char** argv)
     }
     else out("\nNo config file provided as argument, using configuration defined in the main of the builder");
 
-
     // warning: automatically saves config in working directory as SimConfig.json
     // beware of possible overright!
     //here you can directly provide the config file name
-    //filename = "/home/andr/WORK/TPPT/SimConfig1.json";
+    //filename = "/home/andr/WORK/TPPT/BuilderConfig1.json";
 
     if (!filename.empty())
     {

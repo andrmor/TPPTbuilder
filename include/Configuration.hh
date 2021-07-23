@@ -16,8 +16,8 @@ public:
     Configuration(Configuration const&) = delete;
     void operator=(Configuration const&) = delete;
 
-    void saveConfig(const std::string & filename) const;
-    void loadConfig(const std::string & filename);
+    void saveConfig(const std::string & fileName) const;
+    void loadConfig(const std::string & fileName);
 
     std::string WorkingDirectory;
 
@@ -38,8 +38,12 @@ public:
 
     std::vector<std::pair<double,double>> TimeRanges;
 
-    int    NumScint = 6144;
+    // not saved / loaded:
+    const int NumScint = 6144;
 
+private:
+    int isDirExist(const std::string & dirName);
+    int isFileExist(const std::string & fileName);
 };
 
 #endif // configuration_h
