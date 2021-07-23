@@ -5,19 +5,20 @@
 
 #include <vector>
 
+class Configuration;
+
 class Clusterer
 {
 public:
-    Clusterer(std::vector< std::vector<DepositionNodeRecord>> & Nodes, double MaxTimeDelta);
+    Clusterer(std::vector< std::vector<DepositionNodeRecord>> & Nodes);
 
     void cluster();
 
     bool bDebug = false;
 
 private:
+    const Configuration & Config;
     std::vector< std::vector<DepositionNodeRecord>> & Nodes;
-
-    double maxTimeDelta    = 1.0;
 
 private:
     int  doPrecluster(std::vector<DepositionNodeRecord> & nvec);

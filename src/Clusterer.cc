@@ -1,19 +1,20 @@
 #include "Clusterer.hh"
+#include "Configuration.hh"
 #include "out.hh"
 
 #include <algorithm>
 
-Clusterer::Clusterer(std::vector<std::vector<DepositionNodeRecord>> & Nodes, double MaxTimeDelta) :
-    Nodes(Nodes), maxTimeDelta(MaxTimeDelta) {}
+Clusterer::Clusterer(std::vector<std::vector<DepositionNodeRecord>> & Nodes) :
+    Config(Configuration::getInstance()),
+    Nodes(Nodes) {}
 
 void Clusterer::cluster()
 {
-    if (bDebug) out("->Starting clustering (", maxTimeDelta, "ns)...");
+    out("Starting clustering (", Config.ClusterTime, "ns)");
 
     for (int iScint = 0; iScint < Nodes.size(); iScint++)
     {
         //out("Clustering for scint #:", iScint);
-
         std::vector<DepositionNodeRecord> & nvec = Nodes[iScint];
         if (nvec.empty()) continue;
 
@@ -58,7 +59,7 @@ int Clusterer::doPrecluster(std::vector<DepositionNodeRecord> & nvec)
     {
         const DepositionNodeRecord & newNode = nvec[iNode];
 
-        if (nvecClustered.back().isCluster(newNode,  maxTimeDelta))
+        if (nvecClustered.back().isCluster(newNode, Config.ClusterTime))
         {
             nvecClustered.back().merge(newNode);
             iMergeCounter++;
@@ -86,7 +87,7 @@ int Clusterer::doCluster(std::vector<DepositionNodeRecord> & nvec)
         bool bFoundOldCluster = false;
         for (DepositionNodeRecord & oldCluster : nvecClustered)
         {
-            if (oldCluster.isCluster(newNode, maxTimeDelta))
+            if (oldCluster.isCluster(newNode, Config.ClusterTime))
             {
                 oldCluster.merge(newNode);
                 bFoundOldCluster = true;
