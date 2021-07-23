@@ -68,7 +68,7 @@ void Writer::write(std::vector<std::vector<EventRecord> > & Events)
 {
     if (!outStream)
     {
-        if (bDebug) "Output stream does not exist!";
+        if (bDebug) out("Output stream does not exist!");
         exit(1);
     }
 
