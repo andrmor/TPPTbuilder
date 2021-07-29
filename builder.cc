@@ -38,11 +38,9 @@ int main(int argc, char** argv)
         Config.WorkingDirectory = "/home/andr/WORK/TPPT";
         //Config.WorkingDirectory = "/data/margarida/Data";
 
-        Config.BinaryInput  = true;
-        Config.BinaryOutput = true;
-
-        Config.InputFileNames = {"SimOutput.bin"};
-        //Config.InputFileNames = {"SimOutput.txt"};
+        Config.BinaryInput    = false;
+        //Config.InputFileNames = {"SimOutput.bin"};
+        Config.InputFileNames = {"SimOutput.txt"};
         //Config.InputFileNames = {"SimOutput-NatRad-0-0m1m.bin"};
         /*
         Config.inputFileNames = {"SimOutput-NatRad-0-0m1m.bin",
@@ -52,8 +50,9 @@ int main(int argc, char** argv)
                                   "SimOutput-NatRad-4-4m5m.bin"};
         */
 
-        Config.OutputFileName = "BuilderOutput.bin";
-        //Config.outputFileName = "BuilderOutput.txt";
+        Config.BinaryOutput   = false;
+        //Config.OutputFileName = "BuilderOutput.bin";
+        Config.OutputFileName = "BuilderOutput.txt";
 
         Config.CTR             = 0.2; // coincidence timing resolution in ns!
         Config.Seed            = 100;
@@ -64,8 +63,8 @@ int main(int argc, char** argv)
         Config.IntegrationTime = 40.0;
         Config.DeadTime        = 100.0;
 
-        //sConfig.TimeRanges = { {0, 1e50} }; // no filter and splitting
-        Config.TimeRanges = { {0, 1e10}, {1e10, 2e10}, {2e10, 3e10}, {3e10, 4e10}, {4e10, 5e10}, {5e10, 6e10} };
+        Config.TimeRanges = { {0, 1e50} }; // no filter and splitting
+        //Config.TimeRanges = { {0, 1e10}, {1e10, 2e10}, {2e10, 3e10}, {3e10, 4e10}, {4e10, 5e10}, {5e10, 6e10} };
         //Config.TimeRanges = { {0, 6e10}, {6e10, 12e10}, {12e10, 18e10}, {18e10, 24e10}, {24e10, 30e10} };
 
         // --- End of user inits
