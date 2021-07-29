@@ -23,9 +23,8 @@ public:
     void write(std::vector<std::vector<EventRecord>> & Events);
 
     void saveEnergyDist(const std::string & fileName);
-    void saveTimeDist(const std::string & fileName);
+    void saveTimeDist  (const std::string & fileName);
 
-    bool bDebug = false;
     bool bSaveEnergyDist = true;
     bool bSaveTimeDist = true;
     std::string EnergyDistFileName = "Builder-EnergyDist.txt";
@@ -39,6 +38,8 @@ private:
     std::normal_distribution<double> * gauss      = nullptr;
     Hist1D                           * histEnergy = nullptr;
     Hist1D                           * histTime   = nullptr;
+
+    bool bDebug = false;
 
     void blurTime(double & time);
 };

@@ -10,7 +10,7 @@
 Writer::Writer() : Config(Configuration::getInstance())
 {
     const std::string FileName = Config.WorkingDirectory + '/' + Config.OutputFileName;
-    out("Opening output stream, file:", FileName);
+    out("Opening output stream to file:", FileName);
 
     outStream = new std::ofstream();
     if (Config.BinaryOutput) outStream->open(FileName, std::ios::out | std::ios::binary);
@@ -56,11 +56,11 @@ void Writer::write(std::vector<std::vector<EventRecord> > & Events)
 {
     if (!outStream)
     {
-        if (bDebug) out("Output stream does not exist!");
+        out("Output stream does not exist!");
         exit(1);
     }
 
-    if (bDebug) out("->Writing events to file...");
+    out("->Writing events to file...");
 
     for (int iScint = 0; iScint < Events.size(); iScint++)
     {
@@ -97,7 +97,7 @@ void Writer::write(std::vector<std::vector<EventRecord> > & Events)
         }
     }
 
-    if (bDebug) out("\n<-Write completed\n");
+    out("\n<-Write completed\n");
 }
 
 void Writer::blurTime(double & time)

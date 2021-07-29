@@ -15,10 +15,10 @@ public:
 
     void read(const std::pair<double, double> & timeRange, std::vector<std::vector<DepositionNodeRecord>> & Nodes); //timeRange: <from,to> in ns
 
-    bool bDebug = false;
-
 private:
     const Configuration & Config;
+
+    bool bDebug = false;
 };
 
 #endif // reader_h
