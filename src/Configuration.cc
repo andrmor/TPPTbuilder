@@ -112,7 +112,7 @@ void Configuration::loadConfig(const std::string & fileName)
     jstools::readArray(json, "TimeRanges", arTR);
     for (size_t i = 0; i < arTR.size(); i++)
     {
-        const json11::Json & arEl = ar[i];
+        const json11::Json & arEl = arTR[i];
         const json11::Json::array arP = arEl.array_items();
         if (arP.size() != 2)
         {
