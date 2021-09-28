@@ -1,26 +1,26 @@
 #include "Reader.hh"
+#include "Configuration.hh"
 #include "out.hh"
 
 #include <fstream>
 #include <sstream>
 #include <ios>
 
-Reader::Reader(const std::string & dir, const std::vector<std::string> & fileNames, bool binary) :
-    Dir(dir), FileNames(fileNames), bBinary(binary) {}
+Reader::Reader() : Config(Configuration::getInstance()) {}
 
 void Reader::read(const std::pair<double,double> & timeRange, std::vector<std::vector<DepositionNodeRecord> > & Nodes)
 {
     if (bDebug) out("\n->Reading input files...\n");
     int iScint;
 
-    for (std::string FileName : FileNames)
+    for (const std::string & FileName : Config.InputFileNames)
     {
-        const std::string fn = Dir + '/' + FileName;
-        if (bDebug) out("Input file:", fn);
+        const std::string fn = Config.WorkingDirectory + '/' + FileName;
+        out("Input file:", fn);
 
         std::ifstream inStream;
-        if (bBinary) inStream.open(fn, std::ios::in | std::ios::binary);
-        else         inStream.open(fn);
+        if (Config.BinaryInput) inStream.open(fn, std::ios::in | std::ios::binary);
+        else                    inStream.open(fn);
 
         if (!inStream.is_open() || inStream.fail() || inStream.bad())
         {
@@ -28,7 +28,7 @@ void Reader::read(const std::pair<double,double> & timeRange, std::vector<std::v
             exit(2);
         }
 
-        if (bBinary)
+        if (Config.BinaryInput)
         {
             char ch;
             double time, energy;

@@ -1,4 +1,5 @@
-﻿#include "DepositionNodeRecord.hh"
+﻿#include "Configuration.hh"
+#include "DepositionNodeRecord.hh"
 #include "EventRecord.hh"
 #include "Reader.hh"
 #include "Clusterer.hh"
@@ -11,68 +12,81 @@
 
 int main(int argc, char** argv)
 {
-    // --- Start of user inits ---
+    Configuration & Config = Configuration::getInstance();
 
-    std::string dir = "/home/andr/WORK/TPPT";
-    //std::string dir = "/data/margarida/Data";
-
-    bool bBinaryInput  = true;
-    bool bBinaryOutput = true;
-
-    /*
-    std::vector<std::string> inputFileNames = {"SimOutput-NatRad-0-0m1m.bin",
-                                               "SimOutput-NatRad-1-1m2m.bin",
-                                               "SimOutput-NatRad-2-2m3m.bin",
-                                               "SimOutput-NatRad-3-3m4m.bin",
-                                               "SimOutput-NatRad-4-4m5m.bin"};
-    */
-
-    std::vector<std::string> inputFileNames = {"SimOutput-NatRad-0-0m1m.bin"};
-
-    //std::vector<std::string> inputFileNames = {"SimOutput.bin"};
-    //std::vector<std::string> inputFileNames = {"SimOutput.txt"};
-    std::string outputFileName = "BuilderOutput.bin";
-    //std::string outputFileName = "BuilderOutput.txt";
-
-    double CTR             = 0.2; // coincidence timing resolution in ns!
-    long   Seed            = 100;
-
-    double clusterTime     = 0.1;
-    double roughEnergyMin  = 0.311;
-    double roughEnergyMax  = 0.711;
-    double integrationTime = 40.0;
-    double deadTime        = 100.0;
-
-    //std::vector<std::pair<double,double>> TimeRanges = { {0, 1e50} }; // no filter and splitting
-    std::vector<std::pair<double,double>> TimeRanges = { {0, 1e10}, {1e10, 2e10}, {2e10, 3e10}, {3e10, 4e10}, {4e10, 5e10}, {5e10, 6e10} };
-    //std::vector<std::pair<double,double>> TimeRanges = { {0, 6e10}, {6e10, 12e10}, {12e10, 18e10}, {18e10, 24e10}, {24e10, 30e10} };
-
-    // --- End of user inits
-
-    Writer writer(dir, outputFileName, bBinaryOutput);
-    writer.configure(roughEnergyMin, roughEnergyMax, CTR, Seed);
-    if (!writer.isOK())
+    std::string filename;
+    if (argc > 1)
     {
-        out("Failed to create output file", outputFileName, "in", dir);
-        exit(1);
+        filename = std::string(argv[1]);
+        out("\nLoading config from file:", filename);
+    }
+    else out("\nNo config file provided as argument, using configuration defined in the main of the builder");
+
+    // warning: automatically saves config (if no errors) in working directory as BuilderConfig.json
+    // beware of possible overright!
+    //here you can directly provide the config file name
+    filename = "/home/andr/WORK/TPPT/BuilderConfig1.json";
+
+    if (!filename.empty())
+    {
+        Config.loadConfig(filename);
+    }
+    else
+    {
+        // --- Start of user inits ---
+
+        Config.WorkingDirectory = "/home/andr/WORK/TPPT";
+        //Config.WorkingDirectory = "/data/margarida/Data";
+
+        Config.BinaryInput    = false;
+        //Config.InputFileNames = {"SimOutput.bin"};
+        Config.InputFileNames = {"SimOutput.txt"};
+        //Config.InputFileNames = {"SimOutput-NatRad-0-0m1m.bin"};
+        /*
+        Config.inputFileNames = {"SimOutput-NatRad-0-0m1m.bin",
+                                  "SimOutput-NatRad-1-1m2m.bin",
+                                  "SimOutput-NatRad-2-2m3m.bin",
+                                  "SimOutput-NatRad-3-3m4m.bin",
+                                  "SimOutput-NatRad-4-4m5m.bin"};
+        */
+
+        Config.BinaryOutput   = false;
+        //Config.OutputFileName = "BuilderOutput.bin";
+        Config.OutputFileName = "BuilderOutput.txt";
+
+        Config.CTR             = 0.2; // coincidence timing resolution in ns!
+        Config.Seed            = 100;
+
+        Config.ClusterTime     = 0.1;
+        Config.RoughEnergyMin  = 0.311;
+        Config.RoughEnergyMax  = 0.711;
+        Config.IntegrationTime = 40.0;
+        Config.DeadTime        = 100.0;
+
+        Config.TimeRanges = { {0, 1e50} }; // no filter and splitting
+        //Config.TimeRanges = { {0, 1e10}, {1e10, 2e10}, {2e10, 3e10}, {3e10, 4e10}, {4e10, 5e10}, {5e10, 6e10} };
+        //Config.TimeRanges = { {0, 6e10}, {6e10, 12e10}, {12e10, 18e10}, {18e10, 24e10}, {24e10, 30e10} };
+
+        // --- End of user inits
     }
 
-    const int numScint = 6144;
-    for (const std::pair<double,double> & timeRange : TimeRanges)
+    Writer writer;
+
+    for (const std::pair<double,double> & timeRange : Config.TimeRanges)
     {
         out("Processing time range from", timeRange.first, " ns to", timeRange.second, " ns");
-        std::vector<std::vector<DepositionNodeRecord>> Nodes;  Nodes. resize(numScint);
-        std::vector<std::vector<EventRecord>>          Events; Events.resize(numScint);
+        std::vector<std::vector<DepositionNodeRecord>> Nodes;  Nodes. resize(Config.NumScint);
+        std::vector<std::vector<EventRecord>>          Events; Events.resize(Config.NumScint);
 
-        Reader reader(dir, inputFileNames, bBinaryInput);
+        Reader reader;
         reader.read(timeRange, Nodes);
         out("Reading completed");
 
-        Clusterer clusterer(Nodes, clusterTime);
+        Clusterer clusterer(Nodes);
         clusterer.cluster();
         out("Clustering completed");
 
-        EventBuilder builder(Nodes, integrationTime, deadTime);
+        EventBuilder builder(Nodes);
         builder.buildEvents(Events);
         out("Event building completed");
 
@@ -81,4 +95,6 @@ int main(int argc, char** argv)
 
     writer.saveEnergyDist("Builder-Energy.txt");
     writer.saveTimeDist("Builder-Time.txt");
+
+    Config.saveConfig("BuilderConfig.json");
 }

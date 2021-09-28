@@ -1,14 +1,16 @@
 #include "EventBuilder.hh"
+#include "Configuration.hh"
 #include "out.hh"
 
 #include <algorithm>
 
-EventBuilder::EventBuilder(std::vector<std::vector<DepositionNodeRecord>> & clusters, double integrationTime, double deadTime) :
-    Clusters(clusters), IntegrationTime(integrationTime), DeadTime(deadTime) {}
+EventBuilder::EventBuilder(std::vector<std::vector<DepositionNodeRecord>> & clusters) :
+    Config(Configuration::getInstance()),
+    Clusters(clusters) {}
 
 void EventBuilder::buildEvents(std::vector<std::vector<EventRecord>> & events)
 {
-    if (bDebug) out("->Starting event building (", IntegrationTime, DeadTime, ")...");
+    out("Starting event building (", Config.IntegrationTime, Config.DeadTime, ")...");
 
     for (int iScint = 0; iScint < Clusters.size(); iScint++)
     {
@@ -34,9 +36,9 @@ void EventBuilder::buildEvents(std::vector<std::vector<EventRecord>> & events)
         {
             DepositionNodeRecord & clust     = cvec[iClust];
             EventRecord          & lastEvent = evVec.back();
-            if      (clust.time < lastEvent.time + IntegrationTime)
+            if      (clust.time < lastEvent.time + Config.IntegrationTime)
                 lastEvent.merge(clust);
-            else if (clust.time < lastEvent.time + DeadTime)
+            else if (clust.time < lastEvent.time + Config.DeadTime)
                 continue;
             else
                 evVec.push_back( EventRecord(clust.time, clust.energy) );

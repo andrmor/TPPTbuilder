@@ -6,20 +6,21 @@
 
 #include <vector>
 
+class Configuration;
+
 class EventBuilder
 {
 public:
-    EventBuilder(std::vector<std::vector<DepositionNodeRecord>> & clusters, double integrationTime, double deadTime);
+    EventBuilder(std::vector<std::vector<DepositionNodeRecord>> & clusters);
 
     void buildEvents(std::vector<std::vector<EventRecord>> & events);
 
     bool bDebug = false;
 
 private:
+    const Configuration & Config;
     std::vector< std::vector<DepositionNodeRecord>> & Clusters;
 
-    double IntegrationTime = 1.0;
-    double DeadTime = 100.0;
 };
 
 #endif // eventbuilder_h
