@@ -27,14 +27,17 @@ public:
     std::string OutputFileName;
     bool BinaryOutput = false;
 
-    double CTR             = 0.2;     // coincidence timing resolution [ns]
-    int    Seed            = 100;     // int due to json11
+    int    Seed             = 100;     // int due to json11
 
-    double ClusterTime     = 0.1;     // [ns]
-    double RoughEnergyMin  = 0.311;   // [MeV]
-    double RoughEnergyMax  = 0.711;   // [MeV]
-    double IntegrationTime = 40.0;    // [ns]
-    double DeadTime        = 100.0;   // [ns]
+    double CTR              = 0.2;     // coincidence timing resolution [ns]
+
+    double EnergyResolution = 13.0;    // energy resolution in FWHM
+
+    double ClusterTime      = 0.1;     // [ns]
+    double RoughEnergyMin   = 0.311;   // [MeV]
+    double RoughEnergyMax   = 0.711;   // [MeV]
+    double IntegrationTime  = 40.0;    // [ns]
+    double DeadTime         = 100.0;   // [ns]
 
     std::vector<std::pair<double,double>> TimeRanges;
 

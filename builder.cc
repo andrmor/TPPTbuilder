@@ -4,6 +4,7 @@
 #include "Reader.hh"
 #include "Clusterer.hh"
 #include "EventBuilder.hh"
+#include "GaussBlur.hh"
 #include "Writer.hh"
 #include "out.hh"
 
@@ -39,9 +40,8 @@ int main(int argc, char** argv)
         Config.WorkingDirectory = "/home/andr/WORK/TPPT";
         //Config.WorkingDirectory = "/data/margarida/Data";
 
-        Config.BinaryInput    = false;
-        //Config.InputFileNames = {"SimOutput.bin"};
-        Config.InputFileNames = {"SimOutput.txt"};
+        Config.BinaryInput    = true;  Config.InputFileNames = {"SimOutput.bin"};
+        //Config.BinaryInput    = false; Config.InputFileNames = {"SimOutput.txt"};
         //Config.InputFileNames = {"SimOutput-NatRad-0-0m1m.bin"};
         /*
         Config.inputFileNames = {"SimOutput-NatRad-0-0m1m.bin",
@@ -51,18 +51,21 @@ int main(int argc, char** argv)
                                   "SimOutput-NatRad-4-4m5m.bin"};
         */
 
-        Config.BinaryOutput   = false;
-        //Config.OutputFileName = "BuilderOutput.bin";
-        Config.OutputFileName = "BuilderOutput.txt";
+        Config.BinaryOutput    = true; Config.OutputFileName = "BuilderOutput.bin";
+        //Config.BinaryOutput   = false; Config.OutputFileName = "BuilderOutput.txt";
 
-        Config.CTR             = 0.2; // coincidence timing resolution in ns!
-        Config.Seed            = 100;
+        Config.Seed             = 100;
 
-        Config.ClusterTime     = 0.1;
-        Config.RoughEnergyMin  = 0.311;
-        Config.RoughEnergyMax  = 0.711;
-        Config.IntegrationTime = 40.0;
-        Config.DeadTime        = 100.0;
+        Config.ClusterTime      = 0.1;   // ns
+
+        Config.IntegrationTime  = 40.0;  // ns
+        Config.DeadTime         = 100.0; // ns
+
+        Config.CTR              = 0.2;  // coincidence timing resolution in ns!
+        Config.EnergyResolution = 0.13; // energy resolution (fraction, FWHM)
+
+        Config.RoughEnergyMin   = 0.311;
+        Config.RoughEnergyMax   = 0.711;
 
         Config.TimeRanges = { {0, 1e50} }; // no filter and splitting
         //Config.TimeRanges = { {0, 1e10}, {1e10, 2e10}, {2e10, 3e10}, {3e10, 4e10}, {4e10, 5e10}, {5e10, 6e10} };
@@ -90,6 +93,13 @@ int main(int argc, char** argv)
         EventBuilder builder(Nodes);
         builder.buildEvents(Events);
         out("Event building completed");
+
+        if (Config.EnergyResolution != 0)
+        {
+            GaussBlur Blur;
+            Blur.applyBlur(Events);
+            out("Energy blurring completed");
+        }
 
         writer.write(Events);
     }

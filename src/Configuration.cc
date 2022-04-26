@@ -27,6 +27,7 @@ void Configuration::saveConfig(const std::string & fileName) const
     json["BinaryOutput"]    = BinaryOutput;
 
     json["CTR"]             = CTR;
+    json["EnergyResolution"]= EnergyResolution;
     json["Seed"]            = Seed;
 
     json["ClusterTime"]     = ClusterTime;
@@ -99,6 +100,7 @@ void Configuration::loadConfig(const std::string & fileName)
     jstools::readBool  (json, "BinaryOutput",    BinaryOutput);
 
     jstools::readDouble(json, "CTR",             CTR);
+    jstools::readDouble(json, "EnergyResolution",EnergyResolution);
     jstools::readInt   (json, "Seed",            Seed);
 
     jstools::readDouble(json, "ClusterTime",     ClusterTime);
