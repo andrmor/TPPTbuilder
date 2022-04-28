@@ -37,10 +37,10 @@ int main(int argc, char** argv)
     {
         // --- Start of user inits ---
 
-        Config.WorkingDirectory = "/home/andr/WORK/TPPT";
+        Config.WorkingDirectory = "/home/andr/WORK/TPPT/Na22/AfterEnergyBlurAdded";
         //Config.WorkingDirectory = "/data/margarida/Data";
 
-        Config.BinaryInput    = true;  Config.InputFileNames = {"SimOutput.bin"};
+        Config.BinaryInput    = true;  Config.InputFileNames = {"SimOutputTest.bin"};
         //Config.BinaryInput    = false; Config.InputFileNames = {"SimOutput.txt"};
         //Config.InputFileNames = {"SimOutput-NatRad-0-0m1m.bin"};
         /*
@@ -51,7 +51,7 @@ int main(int argc, char** argv)
                                   "SimOutput-NatRad-4-4m5m.bin"};
         */
 
-        Config.BinaryOutput    = true; Config.OutputFileName = "BuilderOutput.bin";
+        Config.BinaryOutput    = true; Config.OutputFileName = "BuilderOutputTest.bin";
         //Config.BinaryOutput   = false; Config.OutputFileName = "BuilderOutput.txt";
 
         Config.Seed             = 100;
@@ -61,11 +61,11 @@ int main(int argc, char** argv)
         Config.IntegrationTime  = 40.0;  // ns
         Config.DeadTime         = 100.0; // ns
 
-        Config.CTR              = 0.2;  // coincidence timing resolution in ns!
+        Config.CTR              = 0.2;  // ns ->coincidence timing resolution
         Config.EnergyResolution = 0.13; // energy resolution (fraction, FWHM)
 
-        Config.RoughEnergyMin   = 0.311;
-        Config.RoughEnergyMax   = 0.711;
+        Config.RoughEnergyMin   = 0.010; // MeV
+        Config.RoughEnergyMax   = 1.711; // MeV
 
         Config.TimeRanges = { {0, 1e50} }; // no filter and splitting
         //Config.TimeRanges = { {0, 1e10}, {1e10, 2e10}, {2e10, 3e10}, {3e10, 4e10}, {4e10, 5e10}, {5e10, 6e10} };
@@ -102,6 +102,7 @@ int main(int argc, char** argv)
         }
 
         writer.write(Events);
+        out("Saved", Events.size(), "events");
     }
 
     writer.saveEnergyDist("Builder-Energy.txt");

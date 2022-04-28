@@ -12,6 +12,8 @@ void Clusterer::cluster()
 {
     out("Starting clustering (", Config.ClusterTime, "ns)");
 
+    int numMergesPreclusterGlobal = 0;
+    int numMergesClusterGlobal = 0;
     for (int iScint = 0; iScint < Nodes.size(); iScint++)
     {
         //out("Clustering for scint #:", iScint);
@@ -25,14 +27,16 @@ void Clusterer::cluster()
             outNodes(nvec);
         }
 
-        std::sort(nvec.begin(), nvec.end());
-
         int numMerges = doPrecluster(nvec);
         if (bDebug) out("Number of merges in preclustering:", numMerges);
+        numMergesPreclusterGlobal += numMerges;
+
+        std::sort(nvec.begin(), nvec.end());
 
         do
         {
             numMerges = doCluster(nvec);
+            numMergesClusterGlobal += numMerges;
             if (bDebug) out("Number of merges in clustering:", numMerges);
         }
         while (numMerges != 0);
@@ -43,6 +47,8 @@ void Clusterer::cluster()
             outNodes(Nodes[iScint]);
         }
     }
+    out("-- Num precluster merges:", numMergesPreclusterGlobal);
+    out("-- Num clustering merges:", numMergesClusterGlobal);
 
     if (bDebug) out("\n<-Clustering done\n");
 }
