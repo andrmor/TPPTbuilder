@@ -34,8 +34,7 @@ public:
     double EnergyResolution = 13.0;    // energy resolution in FWHM
 
     double ClusterTime      = 0.1;     // [ns]
-    double RoughEnergyMin   = 0.311;   // [MeV]
-    double RoughEnergyMax   = 0.711;   // [MeV]
+    double EventEnergyMin   = 0.01;    // [MeV]
     double IntegrationTime  = 40.0;    // [ns]
     double DeadTime         = 100.0;   // [ns]
 

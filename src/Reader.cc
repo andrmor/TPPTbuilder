@@ -10,13 +10,13 @@ Reader::Reader() : Config(Configuration::getInstance()) {}
 
 void Reader::read(const std::pair<double,double> & timeRange, std::vector<std::vector<DepositionNodeRecord> > & Nodes)
 {
-    if (bDebug) out("\n->Reading input files...\n");
+    //out("Reading input files...\n");
     int iScint;
 
     for (const std::string & FileName : Config.InputFileNames)
     {
         const std::string fn = Config.WorkingDirectory + '/' + FileName;
-        out("Input file:", fn);
+        out("    Input file:", fn);
 
         std::ifstream inStream;
         if (Config.BinaryInput) inStream.open(fn, std::ios::in | std::ios::binary);
@@ -95,6 +95,4 @@ void Reader::read(const std::pair<double,double> & timeRange, std::vector<std::v
 
         inStream.close();
     }
-
-    if (bDebug) out("\n<-Read completed\n");
 }

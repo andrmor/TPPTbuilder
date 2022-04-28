@@ -40,7 +40,7 @@ int main(int argc, char** argv)
         Config.WorkingDirectory = "/home/andr/WORK/TPPT/Na22/AfterEnergyBlurAdded";
         //Config.WorkingDirectory = "/data/margarida/Data";
 
-        Config.BinaryInput    = true;  Config.InputFileNames = {"SimOutputTest.bin"};
+        Config.BinaryInput    = true;  Config.InputFileNames = {"SimOutput1e6.bin"};
         //Config.BinaryInput    = false; Config.InputFileNames = {"SimOutput.txt"};
         //Config.InputFileNames = {"SimOutput-NatRad-0-0m1m.bin"};
         /*
@@ -51,7 +51,7 @@ int main(int argc, char** argv)
                                   "SimOutput-NatRad-4-4m5m.bin"};
         */
 
-        Config.BinaryOutput    = true; Config.OutputFileName = "BuilderOutputTest.bin";
+        Config.BinaryOutput    = true; Config.OutputFileName = "BuilderOutput1e6.bin";
         //Config.BinaryOutput   = false; Config.OutputFileName = "BuilderOutput.txt";
 
         Config.Seed             = 100;
@@ -64,8 +64,7 @@ int main(int argc, char** argv)
         Config.CTR              = 0.2;  // ns ->coincidence timing resolution
         Config.EnergyResolution = 0.13; // energy resolution (fraction, FWHM)
 
-        Config.RoughEnergyMin   = 0.010; // MeV
-        Config.RoughEnergyMax   = 1.711; // MeV
+        Config.EventEnergyMin   = 0.010; // MeV
 
         Config.TimeRanges = { {0, 1e50} }; // no filter and splitting
         //Config.TimeRanges = { {0, 1e10}, {1e10, 2e10}, {2e10, 3e10}, {3e10, 4e10}, {4e10, 5e10}, {5e10, 6e10} };
@@ -78,31 +77,31 @@ int main(int argc, char** argv)
 
     for (const std::pair<double,double> & timeRange : Config.TimeRanges)
     {
-        out("Processing time range from", timeRange.first, " ns to", timeRange.second, " ns");
+        out("==> Processing time range from", timeRange.first, " ns to", timeRange.second, " ns");
         std::vector<std::vector<DepositionNodeRecord>> Nodes;  Nodes. resize(Config.NumScint);
         std::vector<std::vector<EventRecord>>          Events; Events.resize(Config.NumScint);
 
         Reader reader;
         reader.read(timeRange, Nodes);
-        out("Reading completed");
+        out("  -->Reading completed");
 
         Clusterer clusterer(Nodes);
         clusterer.cluster();
-        out("Clustering completed");
+        out("  -->Clustering completed");
 
         EventBuilder builder(Nodes);
         builder.buildEvents(Events);
-        out("Event building completed");
+        out("  -->Event building completed");
 
         if (Config.EnergyResolution != 0)
         {
             GaussBlur Blur;
             Blur.applyBlur(Events);
-            out("Energy blurring completed");
+            out("  -->Energy blurring completed");
         }
 
         writer.write(Events);
-        out("Saved", Events.size(), "events");
+        out("  -->Events saved");
     }
 
     writer.saveEnergyDist("Builder-Energy.txt");
