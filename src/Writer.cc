@@ -79,7 +79,7 @@ void Writer::write(std::vector<std::vector<EventRecord> > & Events)
         // events
         for (EventRecord & ev : evec)
         {
-            if (ev.energy < Config.EventEnergyMin) continue;
+            if (ev.energy < Config.EnergyThreshold) continue;
 
             if (Config.CTR != 0) blurTime(ev.time);
 

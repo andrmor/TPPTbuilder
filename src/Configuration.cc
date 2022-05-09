@@ -31,7 +31,7 @@ void Configuration::saveConfig(const std::string & fileName) const
     json["Seed"]            = Seed;
 
     json["ClusterTime"]     = ClusterTime;
-    json["EventEnergyMin"]  = EventEnergyMin;
+    json["EnergyThreshold"] = EnergyThreshold;
     json["IntegrationTime"] = IntegrationTime;
     json["DeadTime"]        = DeadTime;
 
@@ -103,7 +103,7 @@ void Configuration::loadConfig(const std::string & fileName)
     jstools::readInt   (json, "Seed",            Seed);
 
     jstools::readDouble(json, "ClusterTime",     ClusterTime);
-    jstools::readDouble(json, "EventEnergyMin",  EventEnergyMin);
+    jstools::readDouble(json, "EnergyThreshold", EnergyThreshold);
     jstools::readDouble(json, "IntegrationTime", IntegrationTime);
     jstools::readDouble(json, "DeadTime",        DeadTime);
 

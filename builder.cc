@@ -11,6 +11,22 @@
 #include <string>
 #include <vector>
 
+// Input file format:
+//
+// # iScint                     iScint is the scintillator's index, typically starts with 0
+// t1 e1                        t is the deposition time [ns], e is the deposition energy [MeV]
+// t2 e2
+// ...
+// tn en
+// # iScint+1                   next scintillator index
+// t1 e1
+// t2 e2
+// ...
+
+//Output file format is the same as input, only depositions are replaced with events
+
+// Event is not saved if energy < EnergyThreshold
+
 int main(int argc, char** argv)
 {
     Configuration & Config = Configuration::getInstance();
@@ -64,7 +80,7 @@ int main(int argc, char** argv)
         Config.CTR              = 0.2;  // ns ->coincidence timing resolution
         Config.EnergyResolution = 0.13; // energy resolution (fraction, FWHM)
 
-        Config.EventEnergyMin   = 0.010; // MeV
+        Config.EnergyThreshold  = 0.010; // MeV
 
         Config.TimeRanges = { {0, 1e50} }; // no filter and splitting
         //Config.TimeRanges = { {0, 1e10}, {1e10, 2e10}, {2e10, 3e10}, {3e10, 4e10}, {4e10, 5e10}, {5e10, 6e10} };
